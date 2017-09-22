@@ -14,7 +14,8 @@
         android:layout_height="320dp"
         android:visibility="gone"
         android:layout_centerInParent="true"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        />
 </RelativeLayout>
 
 
