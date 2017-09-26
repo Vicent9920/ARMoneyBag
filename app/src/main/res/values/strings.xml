@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ARMoneyBag</string>
+    <string name="ar_text">AR 红包</string>
+    <string name="ar_signed">AR 签到</string>
 </resources>

@@ -12,16 +12,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.MainActivity"></activity>
-        <activity android:name=".test.Camera2Activity">
+        <activity
+            android:name=".ui.MainActivity"
+            android:theme="@style/NoBarTheme" />
+        <activity
+            android:name=".ui.SplashActivity"
+            android:theme="@style/splash_theme">
+
+        </activity>
+        <activity android:name=".test.Camera2Activity" />
+        <activity android:name=".test.Main2Activity" />
+        <activity android:name=".test.Main3Activity" />
+        <activity android:name=".ui.CaptureActivity" />
+        <activity android:name=".ui.MoneyBagActivity"
+            android:theme="@style/NoBarTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".test.Main2Activity"></activity>
-        <activity android:name=".test.Main3Activity"></activity>
     </application>
 
 </manifest>

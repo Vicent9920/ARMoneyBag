@@ -101,7 +101,7 @@ public class Camera2Activity extends AppCompatActivity implements SurfaceHolder.
                      **/
                     ByteBuffer buffer = img.getPlanes()[0].getBuffer();
                     byte[] data = new byte[buffer.remaining()];
-                    buffer.get(data);
+//                    buffer.get(data);
                     LUtil.e("data:"+data.length+"——threadId:"+Thread.currentThread().getId());
                     img.close();
                 }
@@ -119,9 +119,9 @@ public class Camera2Activity extends AppCompatActivity implements SurfaceHolder.
                     mCameraCaptureSession = cameraCaptureSession;
                     try {
                         // 自动对焦
-                        previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+//                        previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                         // 打开闪光灯
-                        previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+//                        previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
                         // 显示预览
                         CaptureRequest previewRequest = previewRequestBuilder.build();
                         cameraCaptureSession.setRepeatingRequest(previewRequest, null, childHandler);
