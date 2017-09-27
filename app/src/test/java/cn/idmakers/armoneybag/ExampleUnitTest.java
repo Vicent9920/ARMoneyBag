@@ -17,11 +17,7 @@ public class ExampleUnitTest {
 
     @Test
     public void testString() throws Exception {
-       StringBuilder str = new StringBuilder();
-        str.append("3.14.");
-        if(str.indexOf(".")>1){
-            str.delete(str.length()-2,str.length()-1);
-        }
-        System.out.println(str.toString());
+      String str = "3.14.";
+        System.out.println(str.substring(1,2));
     }
 }

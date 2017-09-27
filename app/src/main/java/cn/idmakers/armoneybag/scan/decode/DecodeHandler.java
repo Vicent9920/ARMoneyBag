@@ -40,6 +40,7 @@ import java.util.Map;
 import cn.idmakers.armoneybag.R;
 import cn.idmakers.armoneybag.scan.utils.BitmapCompare;
 import cn.idmakers.armoneybag.ui.CaptureActivity;
+import cn.idmakers.armoneybag.util.LUtil;
 
 public class DecodeHandler extends Handler {
 
@@ -106,7 +107,7 @@ public class DecodeHandler extends Handler {
 		image.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, stream);
 		Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
 		bmpData.add(bmp);
-
+		LUtil.e("decodeData");
 //		decodeData(bmp);
 		if(bmpData.size()%2 == 1){
 			lastHashValue = BitmapCompare.bitmapCompare(bmp);
