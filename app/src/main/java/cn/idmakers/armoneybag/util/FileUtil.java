@@ -1011,6 +1011,7 @@ public class FileUtil {
      */
     public static void shareMsg(Context context,String activityTitle, String msgTitle, String msgText,
                          String imgPath) {
+        LUtil.e(msgText);
         Intent intent = new Intent(Intent.ACTION_SEND);
         if (imgPath == null || imgPath.equals("")) {
             intent.setType("text/plain"); // 纯文本

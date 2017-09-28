@@ -13,15 +13,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 import butterknife.OnTextChanged;
+import cn.idmakers.armoneybag.App;
 import cn.idmakers.armoneybag.R;
 import cn.idmakers.armoneybag.scan.decode.DecodeThread;
+import cn.idmakers.armoneybag.scan.utils.BitmapCompare;
 import cn.idmakers.armoneybag.util.FileUtil;
 import cn.idmakers.armoneybag.util.LUtil;
 
@@ -57,7 +57,7 @@ public class MoneyBagActivity extends AppCompatActivity {
 
     @OnLongClick(R.id.cttlayout_tv_img)boolean  sharMoney(){
 
-        FileUtil.shareMsg(this,"AR红包","领领红包","我给你发了一个红包，赶快来领吧！",imgpath);
+        FileUtil.shareMsg(this,"AR红包","领领红包","我在"+ App.getLocation()+"给你发了一个红包，赶快来领吧！"+imgpath+"%\nhttp://192.168.0.133:8020/tibetcement/tabtlesetting.html\n"+App.getLocationValue(),null);
         finish();
         return true;
     }
@@ -95,8 +95,9 @@ public class MoneyBagActivity extends AppCompatActivity {
                 int width = bundle.getInt("width");
                 int height = bundle.getInt("height");
                 Bitmap moneyBmp = BitmapFactory.decodeByteArray(bmpData,0,bmpData.length);
-                File dirFile = FileUtil.createFileDir(this,"ARMoney");
-                imgpath = FileUtil.saveBitmap(dirFile,"temp.png",moneyBmp);
+//                File dirFile = FileUtil.createFileDir(this,"ARMoney");
+//                imgpath = FileUtil.saveBitmap(dirFile,"temp.png",moneyBmp);
+                imgpath = BitmapCompare.bitmapToBase64(moneyBmp);
                 if(imgpath==null){
                     Toast.makeText(this,"红包保存失败，请再次尝试",Toast.LENGTH_SHORT).show();
                 }else{

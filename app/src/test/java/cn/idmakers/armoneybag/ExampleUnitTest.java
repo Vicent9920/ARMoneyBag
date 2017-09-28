@@ -2,7 +2,9 @@ package cn.idmakers.armoneybag;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import cn.idmakers.armoneybag.scan.utils.DesUtils;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -17,7 +19,10 @@ public class ExampleUnitTest {
 
     @Test
     public void testString() throws Exception {
-      String str = "3.14.";
-        System.out.println(str.substring(1,2));
+      String str = "104.047968,30.556863";
+        str = DesUtils.strToUnicode(str);
+        System.out.println("加密后："+str);
+        str = DesUtils.unicodeToString(str);
+        System.out.println("解密后："+str);
     }
 }
