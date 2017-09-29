@@ -14,9 +14,8 @@
         android:id="@+id/tb_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:title=" "
-        app:titleTextColor="@android:color/white"
-        android:background="#113E342B">
+        android:background="#113E342B"
+        app:theme="@style/toolbar_theme">
 
         <TextView
             android:id="@+id/tbar_tv"

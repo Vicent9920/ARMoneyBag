@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,15 +28,16 @@ import cn.idmakers.armoneybag.scan.utils.BitmapCompare;
 import cn.idmakers.armoneybag.util.FileUtil;
 import cn.idmakers.armoneybag.util.LUtil;
 
-public class MoneyBagActivity extends AppCompatActivity {
+public class MoneyBagActivity extends AppCompatActivity implements View.OnClickListener {
 
     @BindView(R.id.cttlayout_etext)EditText etMoney;
     @BindView(R.id.cttlayout_btn)Button btnSend;
     @BindView(R.id.cttlayout_tv_img)TextView tvImg;
     @BindView(R.id.cttlayout_tv_unit)TextView tvUnit;
-
+    @BindView(R.id.tb_toolbar)Toolbar toolbar;
     private static final int QUEST_AR_CODE = 100;
     private String imgpath = null;
+    private boolean isFromOut = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +50,16 @@ public class MoneyBagActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_money_bag);
         ButterKnife.bind(this);
-
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setNavigationOnClickListener(this);
         String action = getIntent().getAction();
         if(!TextUtils.isEmpty(action)&&Intent.ACTION_VIEW.equals(action)){
             Uri uri = getIntent().getData();
             if(uri != null){
                LUtil.e("外部打开");
+                isFromOut = true;
             }
         }
 
@@ -125,5 +131,20 @@ public class MoneyBagActivity extends AppCompatActivity {
                 Toast.makeText(this,"AR红包隐藏失败",Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    public void onClick(View view) {
+       onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(isFromOut){
+            startActivity(new Intent(this,MainActivity.class));
+        }
+        super.onBackPressed();
+
+
     }
 }

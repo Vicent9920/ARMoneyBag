@@ -8,12 +8,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
+ * 图片相似度计算
  * Created by 魏兴 on 2017/9/25.
  */
 
 public class BitmapCompare {
 
-
+    /**
+     * 获取图片哈希值
+     * @param bitmap
+     * @return
+     */
     public static String bitmapCompare(Bitmap bitmap){
         String result = null;
         bitmap = convertGreyImg(bitmap);

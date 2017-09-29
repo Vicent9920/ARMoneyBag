@@ -22,4 +22,9 @@
         <item name="android:windowBackground">@mipmap/splash_bg</item>
     </style>
 
+    <style name="toolbar_theme" >
+        <item name="colorControlNormal">#ffffff</item>
+
+    </style>
+
 </resources>
