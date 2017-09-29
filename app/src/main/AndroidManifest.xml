@@ -55,18 +55,14 @@
         <activity android:name=".test.Main3Activity" />
         <activity android:name=".ui.CaptureActivity" />
         <activity android:name=".ui.MoneyBagActivity"
-            android:theme="@style/NoBarTheme">
+            android:theme="@style/NoBarTheme"
+            android:exported="true">
             <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="http"
-                    android:host="www.ArMoneyBag.com">
-                </data>
-
-                <!-- 下面这几行也必须得设置 -->
-                <category android:name="Android.intent.category.DEFAULT" />
-                <category android:name="Android.intent.category.BROWSABLE" />
-
-                <action android:name="Android.intent.action.VIEW" />
+                    android:scheme="myapp" />
             </intent-filter>
         </activity>
 

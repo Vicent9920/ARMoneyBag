@@ -122,7 +122,7 @@ public class DecodeHandler extends Handler {
 			}
 		}
 		PlanarYUVLuminanceSource source = null;
-		if(bmpCount==3){
+		if(bmpCount==2){
 			source = buildLuminanceSource(rotatedData, size.width, size.height);
 		}
 

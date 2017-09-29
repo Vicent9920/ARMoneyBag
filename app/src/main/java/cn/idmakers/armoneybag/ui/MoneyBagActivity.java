@@ -3,9 +3,11 @@ package cn.idmakers.armoneybag.ui;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -46,6 +48,15 @@ public class MoneyBagActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_money_bag);
         ButterKnife.bind(this);
+
+        String action = getIntent().getAction();
+        if(!TextUtils.isEmpty(action)&&Intent.ACTION_VIEW.equals(action)){
+            Uri uri = getIntent().getData();
+            if(uri != null){
+               LUtil.e("外部打开");
+            }
+        }
+
     }
 
     @OnClick(R.id.cttlayout_btn)void doSend(){
@@ -57,7 +68,7 @@ public class MoneyBagActivity extends AppCompatActivity {
 
     @OnLongClick(R.id.cttlayout_tv_img)boolean  sharMoney(){
 
-        FileUtil.shareMsg(this,"AR红包","领领红包","我在"+ App.getLocation()+"给你发了一个红包，赶快来领吧！"+imgpath+"%\nhttp://192.168.0.133:8020/tibetcement/tabtlesetting.html\n"+App.getLocationValue(),null);
+        FileUtil.shareMsg(this,"AR红包","领领红包","我在"+ App.getLocation()+"给你发了一个红包，赶快来领吧！"+imgpath+"%\nhttp://192.168.0.113:8020/tibetcement/tabtlesetting.html\n"+App.getLocationValue(),null);
         finish();
         return true;
     }
