@@ -3,12 +3,15 @@ package cn.idmakers.armoneybag.ui;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -28,6 +31,8 @@ import cn.idmakers.armoneybag.scan.utils.BitmapCompare;
 import cn.idmakers.armoneybag.util.FileUtil;
 import cn.idmakers.armoneybag.util.LUtil;
 
+import static cn.idmakers.armoneybag.App.location;
+
 public class MoneyBagActivity extends AppCompatActivity implements View.OnClickListener {
 
     @BindView(R.id.cttlayout_etext)EditText etMoney;
@@ -35,9 +40,28 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
     @BindView(R.id.cttlayout_tv_img)TextView tvImg;
     @BindView(R.id.cttlayout_tv_unit)TextView tvUnit;
     @BindView(R.id.tb_toolbar)Toolbar toolbar;
+    /**
+     * 请求打开相机
+     */
     private static final int QUEST_AR_CODE = 100;
+    /**
+     * 图片资源
+     */
     private String imgpath = null;
+    /**
+     * 是否是外部打开
+     */
     private boolean isFromOut = false;
+
+    /**
+     * 外部传过来的图片Id
+     */
+    private int bmpId = -1;
+    /**
+     * 外部传过来的红包坐标
+     */
+    private String bmpLocation;
+    private String money = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +84,11 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
             if(uri != null){
                LUtil.e("外部打开");
                 isFromOut = true;
+                String id = uri.getQueryParameter("id");
+                bmpId = Integer.valueOf(id);
+                bmpLocation = new String(Base64.decode(uri.getQueryParameter("location"), Base64.NO_WRAP));
+                money = uri.getQueryParameter("money");
+                LUtil.e("id:"+id+"\nlocation:"+location);
             }
         }
 
@@ -73,8 +102,15 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @OnLongClick(R.id.cttlayout_tv_img)boolean  sharMoney(){
+        LUtil.e("加密的地址："+App.getLocationValue());
+        if(bmpId == -1){
+            FileUtil.shareMsg(this,"AR红包","领领红包","我在"+ App.getLocation()+"给你发了一个红包，赶快来领吧！"
+                    +imgpath+"%\nhttp://192.168.0.113:8020/tibetcement/tabtlesetting.html\n"+App.getLocationValue(),null);
+        }else{
+            FileUtil.shareMsg(this,"AR红包","领领红包","我在"+ App.getLocation()+"得到一个红包，赶快来领吧！"
+                    +imgpath+"%\nhttp://192.168.0.113:8020/tibetcement/tabtlesetting.html\n"+App.getLocationValue(),null);
+        }
 
-        FileUtil.shareMsg(this,"AR红包","领领红包","我在"+ App.getLocation()+"给你发了一个红包，赶快来领吧！"+imgpath+"%\nhttp://192.168.0.113:8020/tibetcement/tabtlesetting.html\n"+App.getLocationValue(),null);
         finish();
         return true;
     }
@@ -123,6 +159,7 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
                     etMoney.setVisibility(View.GONE);
                     btnSend.setVisibility(View.GONE);
                     tvUnit.setVisibility(View.GONE);
+                    MainActivity.addBitmap(moneyBmp);
                 }
 
             }else if(resultCode == RESULT_CANCELED){
@@ -139,12 +176,25 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if(bmpId != -1){
+            tvImg.setText(money+"元");
+            tvImg.setVisibility(View.VISIBLE);
+            etMoney.setVisibility(View.GONE);
+            btnSend.setVisibility(View.GONE);
+            tvUnit.setVisibility(View.GONE);
+
+            Drawable drawable = new BitmapDrawable(MainActivity.getBitmap(bmpId));
+            tvImg.setBackground(drawable);
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         if(isFromOut){
             startActivity(new Intent(this,MainActivity.class));
         }
         super.onBackPressed();
-
-
     }
 }

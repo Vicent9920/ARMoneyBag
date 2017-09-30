@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Base64;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import cn.idmakers.armoneybag.scan.utils.DesUtils;
 import cn.idmakers.armoneybag.util.LocationUtil;
 
 /**
@@ -42,7 +42,7 @@ public class App extends Application{
     public static String getLocationValue(){
         String value = location.getLonAndLat();
         try {
-            value = DesUtils.strToUnicode(value);
+            value = Base64.encodeToString(value.getBytes(), Base64.NO_PADDING );
         } catch (Exception e) {
             return null;
         }

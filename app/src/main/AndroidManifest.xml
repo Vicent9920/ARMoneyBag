@@ -40,7 +40,8 @@
         </meta-data>
         <activity
             android:name=".ui.MainActivity"
-            android:theme="@style/NoBarTheme" />
+            android:theme="@style/NoBarTheme"
+            android:launchMode="singleInstance"/>
         <activity
             android:name=".ui.SplashActivity"
             android:theme="@style/splash_theme">
@@ -62,7 +63,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="myapp" />
+                    android:scheme="armoney" />
             </intent-filter>
         </activity>
 
