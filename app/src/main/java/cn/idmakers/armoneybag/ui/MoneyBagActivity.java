@@ -2,7 +2,6 @@ package cn.idmakers.armoneybag.ui;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -26,10 +25,10 @@ import butterknife.OnLongClick;
 import butterknife.OnTextChanged;
 import cn.idmakers.armoneybag.App;
 import cn.idmakers.armoneybag.R;
-import cn.idmakers.armoneybag.scan.decode.DecodeThread;
 import cn.idmakers.armoneybag.scan.utils.BitmapCompare;
 import cn.idmakers.armoneybag.util.FileUtil;
 import cn.idmakers.armoneybag.util.LUtil;
+import cn.idmakers.armoneybag.util.SharedPrefsUtil;
 
 import static cn.idmakers.armoneybag.App.location;
 
@@ -43,7 +42,8 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
     /**
      * 请求打开相机
      */
-    private static final int QUEST_AR_CODE = 100;
+    private static final int QUEST_AR_OPEN = 100;
+    private static final int  QUEST_AR_FIND = 101;
     /**
      * 图片资源
      */
@@ -88,7 +88,7 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
                 bmpId = Integer.valueOf(id);
                 bmpLocation = new String(Base64.decode(uri.getQueryParameter("location"), Base64.NO_WRAP));
                 money = uri.getQueryParameter("money");
-                LUtil.e("id:"+id+"\nlocation:"+location);
+                LUtil.e("id:"+bmpId+"\nlocation:"+location);
             }
         }
 
@@ -97,22 +97,33 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
     @OnClick(R.id.cttlayout_btn)void doSend(){
         String sum = etMoney.getText().toString();
         if(sum.length()>0){
-            startActivityForResult(new Intent(this,CaptureActivity.class),QUEST_AR_CODE);
+            startActivityForResult(new Intent(this,CaptureActivity.class),QUEST_AR_OPEN);
         }
     }
 
+    /**
+     * 分享红包   外部网页打开
+     * @return
+     */
     @OnLongClick(R.id.cttlayout_tv_img)boolean  sharMoney(){
         LUtil.e("加密的地址："+App.getLocationValue());
         if(bmpId == -1){
             FileUtil.shareMsg(this,"AR红包","领领红包","我在"+ App.getLocation()+"给你发了一个红包，赶快来领吧！"
-                    +imgpath+"%\nhttp://192.168.0.113:8020/tibetcement/tabtlesetting.html\n"+App.getLocationValue(),null);
+                    +imgpath+"%\nhttp://192.168.199.237:8020/西藏/tabtlesetting.html\n"+App.getLocationValue(),null);
         }else{
             FileUtil.shareMsg(this,"AR红包","领领红包","我在"+ App.getLocation()+"得到一个红包，赶快来领吧！"
-                    +imgpath+"%\nhttp://192.168.0.113:8020/tibetcement/tabtlesetting.html\n"+App.getLocationValue(),null);
+                    +imgpath+"%\nhttp://192.168.199.237:8020/西藏/tabtlesetting.html\n"+App.getLocationValue(),null);
         }
 
         finish();
         return true;
+    }
+
+    @OnClick(R.id.cttlayout_tv_img)void openMoneyBag(){
+        Intent intent = new Intent(this,CaptureActivity.class);
+        intent.putExtra("find",(bmpId != -1));
+        startActivityForResult(intent,QUEST_AR_FIND);
+
     }
 
     @OnTextChanged(R.id.cttlayout_etext)void onTextChanged(CharSequence s){
@@ -141,13 +152,15 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == QUEST_AR_CODE){
+        if(requestCode == QUEST_AR_OPEN){
             if(resultCode ==RESULT_OK){
                 Bundle bundle = data.getExtras();
-                byte[] bmpData = bundle.getByteArray(DecodeThread.BARCODE_BITMAP);
-                int width = bundle.getInt("width");
-                int height = bundle.getInt("height");
-                Bitmap moneyBmp = BitmapFactory.decodeByteArray(bmpData,0,bmpData.length);
+//                byte[] bmpData = bundle.getByteArray(DecodeThread.BARCODE_BITMAP);
+                String value = bundle.getString("bmp");
+//                int width = bundle.getInt("width");
+//                int height = bundle.getInt("height");
+//                Bitmap moneyBmp = BitmapFactory.decodeByteArray(bmpData,0,bmpData.length);
+                Bitmap moneyBmp = BitmapCompare.base64ToBitmap(value);
 //                File dirFile = FileUtil.createFileDir(this,"ARMoney");
 //                imgpath = FileUtil.saveBitmap(dirFile,"temp.png",moneyBmp);
                 imgpath = BitmapCompare.bitmapToBase64(moneyBmp);
@@ -159,7 +172,7 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
                     etMoney.setVisibility(View.GONE);
                     btnSend.setVisibility(View.GONE);
                     tvUnit.setVisibility(View.GONE);
-                    MainActivity.addBitmap(moneyBmp);
+                    SharedPrefsUtil.putValue(MoneyBagActivity.this,"bitmap",moneyBmp);
                 }
 
             }else if(resultCode == RESULT_CANCELED){
@@ -167,7 +180,19 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
             }else{
                 Toast.makeText(this,"AR红包隐藏失败",Toast.LENGTH_SHORT).show();
             }
+        }else if(requestCode == QUEST_AR_FIND){
+            if(resultCode == RESULT_OK){
+                Toast.makeText(this,"红包已经收入钱包中了！",Toast.LENGTH_SHORT).show();
+            }else if(resultCode == RESULT_CANCELED){
+                LUtil.e("自动取消");
+            }else{
+                Toast.makeText(this,"红包打开失败！",Toast.LENGTH_SHORT).show();
+            }
+            startActivity(new Intent(this,MainActivity.class));
+//            finish();
         }
+
+
     }
 
     @Override
@@ -184,8 +209,8 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
             etMoney.setVisibility(View.GONE);
             btnSend.setVisibility(View.GONE);
             tvUnit.setVisibility(View.GONE);
-
-            Drawable drawable = new BitmapDrawable(MainActivity.getBitmap(bmpId));
+            Bitmap bmp = SharedPrefsUtil.getValue(this,"bitmap",((BitmapDrawable)tvImg.getBackground()).getBitmap(),false);
+            Drawable drawable = new BitmapDrawable(bmp);
             tvImg.setBackground(drawable);
         }
     }

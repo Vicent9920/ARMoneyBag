@@ -41,6 +41,7 @@ import cn.idmakers.armoneybag.R;
 import cn.idmakers.armoneybag.scan.utils.BitmapCompare;
 import cn.idmakers.armoneybag.ui.CaptureActivity;
 import cn.idmakers.armoneybag.util.LUtil;
+import cn.idmakers.armoneybag.util.SharedPrefsUtil;
 
 public class DecodeHandler extends Handler {
 
@@ -50,11 +51,19 @@ public class DecodeHandler extends Handler {
 	private List<Bitmap> bmpData = new ArrayList<>();
 	private boolean running = true;
 	private int bmpCount = 0;
+	private String lastHashValue,currentHashValue = null;
+	public String moneyValue = null;
 
 	public DecodeHandler(CaptureActivity activity, Map<DecodeHintType, Object> hints) {
 		multiFormatReader = new MultiFormatReader();
 		multiFormatReader.setHints(hints);
 		this.activity = activity;
+		if(this.activity.isFind){
+			Bitmap bmp = null;
+			bmp = SharedPrefsUtil.getValue(activity.getBaseContext(),"bitmap",bmp,false);
+			moneyValue = BitmapCompare.bitmapCompare(bmp);
+			LUtil.e("红包图片哈希值："+moneyValue);
+		}
 	}
 
 	@Override
@@ -73,7 +82,7 @@ public class DecodeHandler extends Handler {
 		}
 	}
 
-	String lastHashValue,currentHashValue = null;
+
 	/**
 	 * Decode the data within the viewfinder rectangle, and time how long it
 	 * took. For efficiency, reuse the same reader objects from one decode to
@@ -106,21 +115,30 @@ public class DecodeHandler extends Handler {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		image.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, stream);
 		Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
-		bmpData.add(bmp);
-		LUtil.e("decodeData");
-//		decodeData(bmp);
-		if(bmpData.size()%2 == 1){
-			lastHashValue = BitmapCompare.bitmapCompare(bmp);
-		}else{
+
+		if(moneyValue==null){
+			bmpData.add(bmp);
+			if(bmpData.size()%2 == 1){
+				lastHashValue = BitmapCompare.bitmapCompare(bmp);
+			}else{
+				currentHashValue = BitmapCompare.bitmapCompare(bmp);
+				int diff = BitmapCompare.diff(lastHashValue,currentHashValue);
+				Log.e(TAG,"相识度："+diff+"lastHashValue："+lastHashValue+"currentHashValue："+currentHashValue);
+				bmpData.clear();
+				currentHashValue = lastHashValue = null;
+				if(diff == 0){
+					bmpCount++;
+				}
+			}
+		}else {
 			currentHashValue = BitmapCompare.bitmapCompare(bmp);
-			int diff = BitmapCompare.diff(lastHashValue,currentHashValue);
-			Log.e(TAG,"相识度："+diff);
-			bmpData.clear();
-			currentHashValue = lastHashValue = null;
-			if(diff == 0){
-				bmpCount++;
+			int diff = BitmapCompare.diff(moneyValue,currentHashValue);
+			if(diff <= 1){
+				bmpCount = 2;
 			}
 		}
+//		decodeData(bmp);
+
 		PlanarYUVLuminanceSource source = null;
 		if(bmpCount==2){
 			source = buildLuminanceSource(rotatedData, size.width, size.height);
@@ -133,7 +151,8 @@ public class DecodeHandler extends Handler {
 			if (handler != null) {
 				Message message = Message.obtain(handler, R.id.decode_succeeded);
 				Bundle bundle = new Bundle();
-				bundleThumbnail(source, bundle);
+				bundle.putString("bmp",BitmapCompare.bitmapToBase64(bmp));
+//				bundleThumbnail(source, bundle);
 				message.setData(bundle);
 				message.sendToTarget();
 			}

@@ -2,10 +2,14 @@ package cn.idmakers.armoneybag.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,8 +111,28 @@ public class SharedPrefsUtil {
         String strJson = gson.toJson(value);
         SharedPreferences.Editor editor = getEditor(context);
         editor.putString(key, strJson);
-        editor.commit();}
+        editor.commit();
+    }
 
+    /**
+     *
+     * 向SharedPreferences中写入Bitmap类型的数据
+     *
+     * @param context 上下文环境
+     * @param key 键
+     * @param bitmap 值
+     */
+    public static void putValue(Context context, String key, Bitmap bitmap){
+        SharedPreferences.Editor sp = getEditor(context);
+        sp.remove(key);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();// outputstream
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] appicon = baos.toByteArray();// 转为byte数组
+        SharedPreferences.Editor editor = getEditor(context);
+        editor.putString(key, Base64.encodeToString(appicon, Base64.DEFAULT));
+        editor.commit();
+
+    }
 
     /**
      *  向SharedPreferences中写入List类型的数据
@@ -130,6 +154,8 @@ public class SharedPrefsUtil {
         editor.commit();
 
     }
+
+
     /**
      * 从SharedPreferences中读取int类型的数据
      *
@@ -245,6 +271,39 @@ public class SharedPrefsUtil {
         return result;
     }
 
+    /**
+     * 从SharedPreferences中读取 Bitmap 类型的数据
+     *
+     * @param context 上下文环境
+     * @param key 键
+     * @param defValue 如果读取不成功则使用默认值
+     * @return  返回读取的值
+     */
+    public static Bitmap getValue(Context context, String key, Bitmap defValue, boolean empty){
+        SharedPreferences sp = getSharedPreferences(context);
+        String value = sp.getString(key,null);
+        if(null==value){
+            return defValue;
+        }
+        Bitmap bitmap = null;
+        try
+        {
+            // out = new FileOutputStream("/sdcard/aa.jpg");
+            byte[] bitmapArray;
+            bitmapArray = Base64.decode(value, Base64.DEFAULT);
+            bitmap =
+                    BitmapFactory.decodeByteArray(bitmapArray, 0,
+                            bitmapArray.length);
+            // bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            if(empty)
+                sp.edit().remove(key);
+            return bitmap;
+        }
+        catch (Exception e)
+        {
+            return defValue;
+        }
+    }
     /**
      * 从SharedPreferences中读取List类型的数据
      *

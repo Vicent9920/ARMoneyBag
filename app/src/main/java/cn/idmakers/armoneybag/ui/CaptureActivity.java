@@ -52,6 +52,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
     }
 
     private boolean isHasSurface = false;
+    public boolean isFind = false;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -74,6 +75,8 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         animation.setRepeatCount(-1);
         animation.setRepeatMode(Animation.RESTART);
         scanLine.startAnimation(animation);
+        isFind = getIntent().getBooleanExtra("find",false);
+
     }
 
     @Override
