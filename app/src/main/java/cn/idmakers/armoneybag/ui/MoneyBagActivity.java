@@ -18,6 +18,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.zxing.client.android.BitmapCompare;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -25,7 +27,6 @@ import butterknife.OnLongClick;
 import butterknife.OnTextChanged;
 import cn.idmakers.armoneybag.App;
 import cn.idmakers.armoneybag.R;
-import cn.idmakers.armoneybag.scan.utils.BitmapCompare;
 import cn.idmakers.armoneybag.util.FileUtil;
 import cn.idmakers.armoneybag.util.LUtil;
 import cn.idmakers.armoneybag.util.SharedPrefsUtil;
@@ -97,7 +98,7 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
     @OnClick(R.id.cttlayout_btn)void doSend(){
         String sum = etMoney.getText().toString();
         if(sum.length()>0){
-            startActivityForResult(new Intent(this,CaptureActivity.class),QUEST_AR_OPEN);
+            startActivityForResult(new Intent(this,AlipayCaptureActivity.class),QUEST_AR_OPEN);
         }
     }
 
@@ -120,7 +121,7 @@ public class MoneyBagActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @OnClick(R.id.cttlayout_tv_img)void openMoneyBag(){
-        Intent intent = new Intent(this,CaptureActivity.class);
+        Intent intent = new Intent(this,AlipayCaptureActivity.class);
         intent.putExtra("find",(bmpId != -1));
         startActivityForResult(intent,QUEST_AR_FIND);
 
